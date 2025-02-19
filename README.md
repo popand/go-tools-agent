@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-orange.svg)](https://openai.com)
 
-A powerful, extensible Go-based agent framework that combines OpenAI's GPT-4 capabilities with practical tools for real-world tasks. Built with advanced JSON schema validation, memory management, and secure tool execution, this agent seamlessly handles calculations, HTTP requests, Wikipedia searches, and code execution while maintaining context throughout interactions. Easy to extend with new tools and designed for robust, production-ready applications.
+An extensible Go-based agent framework that combines OpenAI's GPT-4 capabilities with practical tools for real-world tasks. Built with JSON schema validation, memory management, and tool execution, this agent handles calculations, HTTP requests, Wikipedia searches, and code execution while maintaining context throughout interactions. Easy to extend with new tools and capabilities.
 
 ## Features
 
@@ -13,7 +13,7 @@ A powerful, extensible Go-based agent framework that combines OpenAI's GPT-4 cap
   - HTTP Request: Make HTTP requests to external APIs
   - Wikipedia: Search and retrieve information from Wikipedia
   - Code Execution: Execute code snippets in various languages
-- Advanced JSON schema validation with type checking and range validation
+- JSON schema validation with type checking and range validation
 - Memory management for context persistence
 - Output parsing and validation
 - Context-aware execution with timeout handling
