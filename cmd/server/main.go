@@ -16,8 +16,16 @@ import (
 	httpTool "github.com/go-tools-agent/internal/tools/http"
 	"github.com/go-tools-agent/internal/tools/wikipedia"
 	"github.com/sashabaranov/go-openai"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// @title Go Tools Agent API
+// @version 1.0
+// @description A powerful, extensible Go-based agent framework that combines OpenAI's GPT-4 capabilities with practical tools.
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+// @host localhost:8080
+// @BasePath /
 type ExecuteRequest struct {
 	Input string `json:"input"`
 }
@@ -103,7 +111,15 @@ func main() {
 	// Create the agent
 	toolsAgent := agent.NewToolsAgent(agentConfig, client, mem, parser)
 
-	// Create HTTP handler
+	// Serve Swagger documentation
+	http.HandleFunc("/swagger/doc.json", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "api/swagger.yaml")
+	})
+	http.HandleFunc("/swagger/", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"),
+	))
+
+	// Create HTTP handler for execute endpoint
 	http.HandleFunc("/execute", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -140,7 +156,7 @@ func main() {
 	})
 
 	// Start server
-	log.Printf("Starting server on :8080")
+	log.Printf("Server started:\n- API: http://localhost:8080\n- Swagger UI: http://localhost:8080/swagger/")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}

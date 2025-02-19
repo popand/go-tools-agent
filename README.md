@@ -61,6 +61,24 @@ OPENAI_API_KEY=your-api-key-here
 
 ## Usage
 
+The Go Tools Agent exposes all functionality through a RESTful API interface. Here's how to use it:
+
+1. Start the API server:
+```bash
+go run cmd/server/main.go
+```
+
+The server will start on port 8080 (or the port specified in your .env file).
+
+2. Access the API:
+   - API Endpoint: http://localhost:8080/execute
+   - Swagger UI: http://localhost:8080/swagger/
+   - OpenAPI Spec: http://localhost:8080/swagger/doc.json
+
+3. Interact with the API:
+
+### Basic Request Format
+
 You can use the agent either as a CLI application or via HTTP API.
 
 ### CLI Usage
@@ -71,11 +89,6 @@ go run cmd/main.go
 ```
 
 ### API Usage
-
-1. Start the API server:
-```bash
-go run cmd/server/main.go
-```
 
 2. Make requests to the API:
 ```bash
