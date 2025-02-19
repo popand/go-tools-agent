@@ -56,8 +56,8 @@ The `.env` file should contain:
 OPENAI_API_KEY=your-api-key-here
 
 # Optional
-# MAX_ITERATIONS=5
-# SYSTEM_MESSAGE="You are a helpful assistant that can perform calculations, make HTTP requests, search Wikipedia, and execute code."
+MAX_ITERATIONS=5
+SYSTEM_MESSAGE="You are a helpful assistant that can perform calculations, make HTTP requests, search Wikipedia, and execute code."
 ```
 
 ## Usage
