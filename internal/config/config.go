@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
 // Config holds all configuration values
 type Config struct {
-	OpenAIAPIKey string
+	OpenAIAPIKey  string
+	SystemMessage string
+	MaxIterations int
 }
 
 // LoadConfig loads configuration from environment variables and .env file
@@ -26,8 +29,24 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("OPENAI_API_KEY environment variable is required")
 	}
 
+	// Get system message from environment or use default
+	systemMessage := os.Getenv("SYSTEM_MESSAGE")
+	if systemMessage == "" {
+		systemMessage = "You are a helpful assistant that can perform calculations, make HTTP requests, search Wikipedia, and execute code."
+	}
+
+	// Get max iterations from environment or use default
+	maxIterations := 5
+	if maxIterStr := os.Getenv("MAX_ITERATIONS"); maxIterStr != "" {
+		if val, err := strconv.Atoi(maxIterStr); err == nil && val > 0 {
+			maxIterations = val
+		}
+	}
+
 	return &Config{
-		OpenAIAPIKey: apiKey,
+		OpenAIAPIKey:  apiKey,
+		SystemMessage: systemMessage,
+		MaxIterations: maxIterations,
 	}, nil
 }
 
@@ -72,4 +91,4 @@ func loadEnvFile() error {
 	}
 
 	return nil
-} 
+}

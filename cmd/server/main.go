@@ -102,8 +102,8 @@ func main() {
 
 	// Configure the agent
 	agentConfig := agent.AgentConfig{
-		SystemMessage:           "You are a helpful assistant that can perform calculations, make HTTP requests, search Wikipedia, and execute code.",
-		MaxIterations:           5,
+		SystemMessage:           cfg.SystemMessage,
+		MaxIterations:           cfg.MaxIterations,
 		ReturnIntermediateSteps: true,
 		Tools:                   tools,
 	}
