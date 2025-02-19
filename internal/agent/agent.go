@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/sashabaranov/go-openai"
@@ -29,6 +30,8 @@ func NewToolsAgent(config AgentConfig, client *openai.Client, memory Memory, par
 
 // Execute runs the agent with the given input
 func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse, error) {
+	log.Printf("\n🤖 Agent received input: %s\n", input)
+
 	var steps []AgentStep
 	var finalOutput json.RawMessage
 
@@ -39,6 +42,9 @@ func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse,
 		memoryContent, err = a.memory.LoadMemory(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load memory: %w", err)
+		}
+		if len(memoryContent) > 0 {
+			log.Printf("📚 Loaded memory context: %s\n", string(memoryContent))
 		}
 	}
 
@@ -54,6 +60,8 @@ func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse,
 		},
 	}
 
+	log.Printf("\n🧠 System prompt: %s\n", a.config.SystemMessage)
+
 	// Add memory context if available
 	if len(memoryContent) > 0 {
 		messages = append(messages, openai.ChatCompletionMessage{
@@ -64,6 +72,8 @@ func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse,
 
 	// Main execution loop
 	for iteration := 0; iteration < a.config.MaxIterations; iteration++ {
+		log.Printf("\n📍 Starting iteration %d/%d\n", iteration+1, a.config.MaxIterations)
+
 		// Check context cancellation
 		select {
 		case <-ctx.Done():
@@ -97,9 +107,18 @@ func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse,
 			return nil, fmt.Errorf("failed to get model response: %w", err)
 		}
 
+		// Log model's response
+		if len(resp.Choices) > 0 {
+			log.Printf("\n🤖 Model response: %s\n", resp.Choices[0].Message.Content)
+		}
+
 		// Process tool calls
 		if len(resp.Choices) > 0 && len(resp.Choices[0].Message.ToolCalls) > 0 {
+			log.Printf("\n🛠️  Model selected tools to use:")
 			for _, toolCall := range resp.Choices[0].Message.ToolCalls {
+				log.Printf("  - Tool: %s", toolCall.Function.Name)
+				log.Printf("    Arguments: %s\n", toolCall.Function.Arguments)
+
 				step := AgentStep{
 					Action:    toolCall.Function.Name,
 					Input:     json.RawMessage(toolCall.Function.Arguments),
@@ -113,9 +132,11 @@ func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse,
 						output, err := tool.Handler(ctx, step.Input)
 						if err != nil {
 							step.Error = err.Error()
+							log.Printf("❌ Tool execution failed: %s\n", err)
 						} else {
 							step.Output = output
 							toolOutput = output
+							log.Printf("✅ Tool output: %s\n", string(output))
 						}
 						break
 					}
@@ -158,6 +179,7 @@ func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse,
 		} else {
 			// No more tool calls, we have the final output
 			if len(resp.Choices) > 0 {
+				log.Printf("\n✨ Final response from model: %s\n", resp.Choices[0].Message.Content)
 				// Ensure the output is in JSON format
 				finalOutput = json.RawMessage(fmt.Sprintf(`{"response": %q, "confidence": 1.0}`, resp.Choices[0].Message.Content))
 				break
@@ -172,6 +194,7 @@ func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse,
 			return nil, fmt.Errorf("failed to parse output: %w", err)
 		}
 		finalOutput = parsedOutput
+		log.Printf("\n📝 Parsed final output: %s\n", string(finalOutput))
 	}
 
 	// Save to memory if available
@@ -179,6 +202,7 @@ func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse,
 		if err := a.memory.SaveMemory(ctx, finalOutput); err != nil {
 			return nil, fmt.Errorf("failed to save memory: %w", err)
 		}
+		log.Printf("\n💾 Saved to memory: %s\n", string(finalOutput))
 	}
 
 	response := &AgentResponse{
