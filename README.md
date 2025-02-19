@@ -27,6 +27,7 @@ An extensible Go-based agent framework that combines OpenAI's GPT-4 capabilities
 - OpenAI API key (GPT-4 access required)
 - Python (for code execution tool)
 
+
 ## Installation
 
 1. Clone the repository:
@@ -447,6 +448,70 @@ Each of these commands will return a JSON response with both the final output an
   }
 }
 ```
+
+## Sample Execution Flow
+
+The agent provides detailed logging of its execution process. Here's a sample flow showing how the agent processes a request:
+
+```
+🤖 Agent received input: 1. Calculate 15 divided by 3 and multiply the result by 4
+                        2. Search Wikipedia for information about Go programming language
+
+📚 Loaded memory context: {
+  "confidence": 1,
+  "response": "The result of dividing 15 by 3 and then multiplying that result by 4 is 20."
+}
+
+🧠 System prompt: You are a helpful assistant that can perform calculations, make HTTP requests, search Wikipedia, and execute code.
+
+📍 Starting iteration 1/5
+
+🛠️  Model selected tools to use:
+  - Tool: calculator
+    Arguments: {"a": 15, "b": 3, "operation": "divide"}
+✅ Tool output: {"result":5}
+
+  - Tool: wikipedia
+    Arguments: {"query": "Go programming language"}
+✅ Tool output: {"title":"Go programming language","extract":"","url":"https://en.wikipedia.org/?curid=28154950","pageId":28154950}
+
+📍 Starting iteration 2/5
+
+🛠️  Model selected tools to use:
+  - Tool: calculator
+    Arguments: {"a":5,"b":4,"operation":"multiply"}
+✅ Tool output: {"result":20}
+
+📍 Starting iteration 3/5
+
+✨ Final response from model: 
+### Calculation Result:
+- The result of dividing 15 by 3 and then multiplying that result by 4 is **20**.
+
+### Go Programming Language:
+Unfortunately, I wasn't able to retrieve a summary from Wikipedia at this time. However, you can find more information about the Go programming language [here](https://en.wikipedia.org/?curid=28154950).
+
+📝 Parsed final output: {
+  "confidence": 1,
+  "response": "### Calculation Result:\n- The result of dividing 15 by 3 and then multiplying that result by 4 is **20**.\n\n### Go Programming Language:\nUnfortunately, I wasn't able to retrieve a summary from Wikipedia at this time. However, you can find more information about the Go programming language [here](https://en.wikipedia.org/?curid=28154950)."
+}
+
+💾 Saved to memory: {
+  "confidence": 1,
+  "response": "### Calculation Result:\n- The result of dividing 15 by 3 and then multiplying that result by 4 is **20**.\n\n### Go Programming Language:\nUnfortunately, I wasn't able to retrieve a summary from Wikipedia at this time. However, you can find more information about the Go programming language [here](https://en.wikipedia.org/?curid=28154950)."
+}
+```
+
+This execution flow shows:
+1. 🤖 The initial user input being received
+2. 📚 Any existing context from memory
+3. 🧠 The system prompt that guides the agent's behavior
+4. 📍 Multiple iterations of tool selection and execution
+5. 🛠️ Tools being selected with their arguments
+6. ✅ Tool execution results
+7. ✨ The final response generation
+8. 📝 Output parsing and validation
+9. 💾 Memory storage for future context
 
 ## License
 
