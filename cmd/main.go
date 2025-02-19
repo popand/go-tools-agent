@@ -7,15 +7,15 @@ import (
 	"log"
 	"time"
 
+	"github.com/go-tools-agent/internal/agent"
+	"github.com/go-tools-agent/internal/config"
+	"github.com/go-tools-agent/internal/memory"
+	"github.com/go-tools-agent/internal/parser"
+	calculator "github.com/go-tools-agent/internal/tools/calculator"
+	"github.com/go-tools-agent/internal/tools/code"
+	"github.com/go-tools-agent/internal/tools/http"
+	"github.com/go-tools-agent/internal/tools/wikipedia"
 	"github.com/sashabaranov/go-openai"
-	"github.com/yourusername/go-tools-agent/internal/agent"
-	"github.com/yourusername/go-tools-agent/internal/config"
-	"github.com/yourusername/go-tools-agent/internal/memory"
-	"github.com/yourusername/go-tools-agent/internal/parser"
-	"github.com/yourusername/go-tools-agent/internal/tools/calculator"
-	"github.com/yourusername/go-tools-agent/internal/tools/code"
-	"github.com/yourusername/go-tools-agent/internal/tools/http"
-	"github.com/yourusername/go-tools-agent/internal/tools/wikipedia"
 )
 
 func main() {
@@ -37,7 +37,9 @@ func main() {
 			"type": "string",
 		},
 		"confidence": map[string]interface{}{
-			"type": "number",
+			"type":    "number",
+			"minimum": 0,
+			"maximum": 1,
 		},
 	}
 	parser := parser.NewJSONOutputParser(outputSchema)
@@ -84,9 +86,9 @@ func main() {
 	// Configure the agent
 	agentConfig := agent.AgentConfig{
 		SystemMessage:           "You are a helpful assistant that can perform calculations, make HTTP requests, search Wikipedia, and execute code.",
-		MaxIterations:          5,
+		MaxIterations:           5,
 		ReturnIntermediateSteps: true,
-		Tools:                  tools,
+		Tools:                   tools,
 	}
 
 	// Create the agent
@@ -113,4 +115,4 @@ func main() {
 	// Pretty print the response
 	prettyResponse, _ := json.MarshalIndent(response, "", "  ")
 	fmt.Printf("Agent Response:\n%s\n", string(prettyResponse))
-} 
+}

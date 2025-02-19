@@ -11,19 +11,19 @@ import (
 
 // ToolsAgent represents the main agent implementation
 type ToolsAgent struct {
-	config      AgentConfig
-	client      *openai.Client
-	memory      Memory
-	parser      OutputParser
+	config AgentConfig
+	client *openai.Client
+	memory Memory
+	parser OutputParser
 }
 
 // NewToolsAgent creates a new instance of ToolsAgent
 func NewToolsAgent(config AgentConfig, client *openai.Client, memory Memory, parser OutputParser) *ToolsAgent {
 	return &ToolsAgent{
-		config:      config,
-		client:      client,
-		memory:      memory,
-		parser:      parser,
+		config: config,
+		client: client,
+		memory: memory,
+		parser: parser,
 	}
 }
 
@@ -127,10 +127,10 @@ func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse,
 				messages = append(messages, openai.ChatCompletionMessage{
 					Role:    openai.ChatMessageRoleAssistant,
 					Content: "",
-					ToolCalls: []openai.ChatCompletionMessageToolCall{
+					ToolCalls: []openai.ToolCall{
 						{
 							ID:   toolCall.ID,
-							Type: openai.ChatCompletionMessageToolCallTypeFunction,
+							Type: openai.ToolTypeFunction,
 							Function: openai.FunctionCall{
 								Name:      toolCall.Function.Name,
 								Arguments: string(step.Input),
@@ -139,16 +139,27 @@ func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse,
 					},
 				})
 
-				messages = append(messages, openai.ChatCompletionMessage{
-					Role:    openai.ChatMessageRoleFunction,
-					Content: string(toolOutput),
-					Name:    toolCall.Function.Name,
-				})
+				if toolOutput != nil {
+					messages = append(messages, openai.ChatCompletionMessage{
+						Role:       openai.ChatMessageRoleTool,
+						Content:    string(toolOutput),
+						Name:       toolCall.Function.Name,
+						ToolCallID: toolCall.ID,
+					})
+				} else {
+					messages = append(messages, openai.ChatCompletionMessage{
+						Role:       openai.ChatMessageRoleTool,
+						Content:    "Error: Tool execution failed",
+						Name:       toolCall.Function.Name,
+						ToolCallID: toolCall.ID,
+					})
+				}
 			}
 		} else {
 			// No more tool calls, we have the final output
 			if len(resp.Choices) > 0 {
-				finalOutput = json.RawMessage(resp.Choices[0].Message.Content)
+				// Ensure the output is in JSON format
+				finalOutput = json.RawMessage(fmt.Sprintf(`{"response": %q, "confidence": 1.0}`, resp.Choices[0].Message.Content))
 				break
 			}
 		}
@@ -179,4 +190,4 @@ func (a *ToolsAgent) Execute(ctx context.Context, input string) (*AgentResponse,
 	}
 
 	return response, nil
-} 
+}
