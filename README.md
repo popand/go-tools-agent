@@ -342,17 +342,6 @@ The system consists of several components:
 - Implement rate limiting for API calls
 - Validate and sanitize all inputs
 
-## License
-
-MIT License
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
 
 ### Sample API Requests
 
@@ -484,3 +473,15 @@ The response includes:
   "error": "Error message here"
 }
 ``` 
+
+## License
+
+MIT License
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
