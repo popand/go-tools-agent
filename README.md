@@ -1,6 +1,10 @@
 # Go Tools Agent
 
-A Go implementation of a Tools Agent system, similar to the n8n LangChain Tools Agent. This implementation provides a framework for creating AI agents that can use tools to accomplish tasks.
+[![Go Version](https://img.shields.io/badge/Go-1.21%2B-blue.svg)](https://golang.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-orange.svg)](https://openai.com)
+
+A powerful, extensible Go-based agent framework that combines OpenAI's GPT-4 capabilities with practical tools for real-world tasks. Built with advanced JSON schema validation, memory management, and secure tool execution, this agent seamlessly handles calculations, HTTP requests, Wikipedia searches, and code execution while maintaining context throughout interactions. Easy to extend with new tools and designed for robust, production-ready applications.
 
 ## Features
 
