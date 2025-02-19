@@ -61,12 +61,75 @@ OPENAI_API_KEY=your-api-key-here
 
 ## Usage
 
-1. Run the example:
+You can use the agent either as a CLI application or via HTTP API.
+
+### CLI Usage
+
+Run the CLI example:
 ```bash
 go run cmd/main.go
 ```
 
-The application will automatically load the configuration from your `.env` file and execute a sample task that demonstrates all available tools.
+### API Usage
+
+1. Start the API server:
+```bash
+go run cmd/server/main.go
+```
+
+2. Make requests to the API:
+```bash
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Can you help me with these tasks:\n1. Calculate 15 divided by 3 and multiply the result by 4\n2. Search Wikipedia for information about Go programming language"
+  }'
+```
+
+The API will return a JSON response with the following structure:
+```json
+{
+  "result": {
+    "final_output": {
+      "response": "...",
+      "confidence": 1.0
+    },
+    "steps": [
+      {
+        "action": "calculator",
+        "input": { ... },
+        "output": { ... },
+        "timestamp": 1739983078
+      }
+    ]
+  }
+}
+```
+
+In case of an error:
+```json
+{
+  "error": "Error message here"
+}
+```
+
+### API Endpoints
+
+#### POST /execute
+Execute the agent with a given input.
+
+**Request Body:**
+```json
+{
+  "input": "Your instruction or query here"
+}
+```
+
+**Response:**
+- Status: 200 OK - Successful execution
+- Status: 400 Bad Request - Invalid input
+- Status: 405 Method Not Allowed - Wrong HTTP method
+- Status: 500 Internal Server Error - Server-side error
 
 ## Example Output
 
@@ -101,21 +164,117 @@ The application will automatically load the configuration from your `.env` file 
 - Input validation and error handling
 - JSON schema-compliant input/output
 
+**Examples:**
+```json
+// Basic arithmetic
+"Calculate 15 plus 5"
+"Multiply 10 by 3"
+"What is 100 divided by 4?"
+"Subtract 7 from 20"
+
+// Complex calculations
+"Calculate (15 + 5) * 2"
+"What is 20% of 150?"
+"If I have 3 groups of 4 items each, how many items total?"
+```
+
 ### HTTP Request Tool
 - Supports GET, POST, PUT, DELETE methods
 - Headers and query parameters support
 - Response includes status code, headers, and body
+
+**Examples:**
+```json
+// GET request
+"Make a GET request to https://api.github.com/repos/golang/go"
+
+// POST request with JSON body
+"Send a POST request to https://api.example.com/data with this JSON body: {'name': 'John', 'age': 30}"
+
+// Request with headers
+"Make a GET request to https://api.example.com/secure with header 'Authorization: Bearer token123'"
+
+// Request with query parameters
+"Fetch data from https://api.example.com/search?q=golang&sort=stars"
+```
 
 ### Wikipedia Tool
 - Search Wikipedia articles
 - Retrieve article content and metadata
 - Returns article URL and extract
 
+**Examples:**
+```json
+// Basic searches
+"Search Wikipedia for information about Go programming language"
+"Find Wikipedia article about Albert Einstein"
+"What does Wikipedia say about artificial intelligence?"
+
+// Specific queries
+"Get the Wikipedia summary of quantum computing"
+"Find Wikipedia information about the history of the Internet"
+"Search Wikipedia for the biography of Ada Lovelace"
+```
+
 ### Code Execution Tool
 - Execute code snippets in various languages
 - Currently supports Python
 - Captures output and exit code
 - Secure execution environment
+
+**Examples:**
+```json
+// Basic Python scripts
+"Run this Python code: print('Hello, World!')"
+
+// Mathematical computations
+"Execute this Python code:
+import math
+radius = 5
+area = math.pi * radius ** 2
+print(f'The area of a circle with radius {radius} is {area:.2f}')"
+
+// Data manipulation
+"Run this Python script:
+numbers = [1, 2, 3, 4, 5]
+average = sum(numbers) / len(numbers)
+print(f'The average is: {average}')"
+
+// File operations
+"Execute this Python code:
+with open('example.txt', 'w') as f:
+    f.write('Hello from Python!')
+print('File created successfully')"
+
+// Using external libraries
+"Run this Python code:
+import pandas as pd
+data = {'name': ['Alice', 'Bob'], 'age': [25, 30]}
+df = pd.DataFrame(data)
+print(df)"
+```
+
+### Combined Examples
+You can combine multiple tools in a single query:
+
+```json
+// Calculation and Wikipedia
+"1. Calculate 15 divided by 3 and multiply the result by 4
+2. Search Wikipedia for information about Go programming language"
+
+// HTTP and Python
+"1. Make a GET request to https://api.github.com/repos/golang/go
+2. Write a Python script to parse the star count from the response"
+
+// Multiple operations
+"Can you help me with these tasks:
+1. Calculate the area of a circle with radius 5
+2. Search Wikipedia for information about Python programming
+3. Make an HTTP GET request to check GitHub's API status
+4. Write a Python script that prints the current date and time"
+```
+
+Each tool can be used independently or in combination with others. The agent will automatically determine which tool(s) to use based on your input query.
 
 ## Adding New Tools
 
