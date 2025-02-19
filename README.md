@@ -434,4 +434,40 @@ Each of these commands will return a JSON response with both the final output an
     ]
   }
 }
+```
+
+### Response Format
+```json
+{
+  "result": {
+    "final_output": {
+      "response": "The response text",
+      "confidence": 1.0
+    },
+    "steps": [
+      {
+        "action": "tool_name",
+        "input": { },
+        "output": { },
+        "timestamp": 1739983078
+      }
+    ]
+  }
+}
+```
+
+The response includes:
+- `response`: The formatted text response from the agent
+- `confidence`: A value between 0 and 1 indicating the agent's confidence in the response
+  - 1.0: High confidence, all tools executed successfully
+  - 0.8-0.99: Good confidence, most tools executed successfully with minor issues
+  - 0.5-0.79: Medium confidence, some tools had execution issues
+  - < 0.5: Low confidence, significant issues during execution
+- `steps`: Array of intermediate steps showing tool executions
+
+### Error Response
+```json
+{
+  "error": "Error message here"
+}
 ``` 
