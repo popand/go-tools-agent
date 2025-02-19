@@ -350,16 +350,12 @@ Here are examples of how to use the API with different tools:
 # Basic calculation
 curl -X POST http://localhost:8080/execute \
   -H "Content-Type: application/json" \
-  -d '{
-    "input": "Calculate 15 divided by 3 and multiply the result by 4"
-  }'
+  -d '{"input": "Calculate 15 divided by 3 and multiply the result by 4"}'
 
 # Complex calculation
 curl -X POST http://localhost:8080/execute \
   -H "Content-Type: application/json" \
-  -d '{
-    "input": "What is 20% of 150 plus 75?"
-  }'
+  -d '{"input": "What is 20% of 150 plus 75?"}'
 ```
 
 #### HTTP Requests
@@ -367,16 +363,12 @@ curl -X POST http://localhost:8080/execute \
 # GET request to GitHub API
 curl -X POST http://localhost:8080/execute \
   -H "Content-Type: application/json" \
-  -d '{
-    "input": "Make a GET request to https://api.github.com/repos/golang/go and tell me how many stars it has"
-  }'
+  -d '{"input": "Make a GET request to https://api.github.com/repos/golang/go and tell me how many stars it has"}'
 
 # POST request with data
 curl -X POST http://localhost:8080/execute \
   -H "Content-Type: application/json" \
-  -d '{
-    "input": "Send a POST request to https://httpbin.org/post with this JSON data: {\"name\": \"John Doe\", \"email\": \"john@example.com\"}"
-  }'
+  -d '{"input": "Send a POST request to https://httpbin.org/post with this JSON data: {\"name\": \"John Doe\", \"email\": \"john@example.com\"}"}'
 ```
 
 #### Wikipedia Searches
@@ -384,16 +376,12 @@ curl -X POST http://localhost:8080/execute \
 # Basic article search
 curl -X POST http://localhost:8080/execute \
   -H "Content-Type: application/json" \
-  -d '{
-    "input": "Search Wikipedia for information about artificial intelligence"
-  }'
+  -d '{"input": "Search Wikipedia for information about artificial intelligence"}'
 
 # Specific information request
 curl -X POST http://localhost:8080/execute \
   -H "Content-Type: application/json" \
-  -d '{
-    "input": "Find the Wikipedia article about quantum computing and summarize the key concepts"
-  }'
+  -d '{"input": "Find the Wikipedia article about quantum computing and summarize the key concepts"}'
 ```
 
 #### Code Execution
@@ -401,20 +389,12 @@ curl -X POST http://localhost:8080/execute \
 # Simple Python script
 curl -X POST http://localhost:8080/execute \
   -H "Content-Type: application/json" \
-  -d '{
-    "input": "Run this Python code: print(\"Hello, World!\")"
-  }'
+  -d '{"input": "Run this Python code: print(\"Hello, World!\")"}'
 
 # Data processing script
 curl -X POST http://localhost:8080/execute \
   -H "Content-Type: application/json" \
-  -d '{
-    "input": "Execute this Python code:
-import pandas as pd
-data = {\"name\": [\"Alice\", \"Bob\"], \"age\": [25, 30]}
-df = pd.DataFrame(data)
-print(df.to_string())"
-  }'
+  -d '{"input": "Execute this Python code:\\nimport pandas as pd\\ndata = {\\\"name\\\": [\\\"Alice\\\", \\\"Bob\\\"], \\\"age\\\": [25, 30]}\\ndf = pd.DataFrame(data)\\nprint(df.to_string())"}'
 ```
 
 #### Combined Operations
@@ -422,20 +402,12 @@ print(df.to_string())"
 # Multiple tools in one request
 curl -X POST http://localhost:8080/execute \
   -H "Content-Type: application/json" \
-  -d '{
-    "input": "1. Calculate the square root of 144
-2. Search Wikipedia for information about Python programming
-3. Make a GET request to https://api.github.com/zen
-4. Run a Python script to print the current date and time"
-  }'
+  -d '{"input": "1. Calculate the square root of 144\\n2. Search Wikipedia for information about Python programming\\n3. Make a GET request to https://api.github.com/zen\\n4. Run a Python script to print the current date and time"}'
 
 # Data processing workflow
 curl -X POST http://localhost:8080/execute \
   -H "Content-Type: application/json" \
-  -d '{
-    "input": "1. Make a GET request to https://api.github.com/repos/golang/go
-2. Write a Python script to extract the star count from the response and calculate what 1% of that number would be"
-  }'
+  -d '{"input": "1. Make a GET request to https://api.github.com/repos/golang/go\\n2. Write a Python script to extract the star count from the response and calculate what 1% of that number would be"}'
 ```
 
 Each of these commands will return a JSON response with both the final output and the intermediate steps taken by the agent. The response will follow this structure:
