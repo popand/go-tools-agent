@@ -339,4 +339,127 @@ MIT License
 2. Create your feature branch
 3. Commit your changes
 4. Push to the branch
-5. Create a new Pull Request 
+5. Create a new Pull Request
+
+### Sample API Requests
+
+Here are examples of how to use the API with different tools:
+
+#### Calculator Operations
+```bash
+# Basic calculation
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Calculate 15 divided by 3 and multiply the result by 4"
+  }'
+
+# Complex calculation
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "What is 20% of 150 plus 75?"
+  }'
+```
+
+#### HTTP Requests
+```bash
+# GET request to GitHub API
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Make a GET request to https://api.github.com/repos/golang/go and tell me how many stars it has"
+  }'
+
+# POST request with data
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Send a POST request to https://httpbin.org/post with this JSON data: {\"name\": \"John Doe\", \"email\": \"john@example.com\"}"
+  }'
+```
+
+#### Wikipedia Searches
+```bash
+# Basic article search
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Search Wikipedia for information about artificial intelligence"
+  }'
+
+# Specific information request
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Find the Wikipedia article about quantum computing and summarize the key concepts"
+  }'
+```
+
+#### Code Execution
+```bash
+# Simple Python script
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Run this Python code: print(\"Hello, World!\")"
+  }'
+
+# Data processing script
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Execute this Python code:
+import pandas as pd
+data = {\"name\": [\"Alice\", \"Bob\"], \"age\": [25, 30]}
+df = pd.DataFrame(data)
+print(df.to_string())"
+  }'
+```
+
+#### Combined Operations
+```bash
+# Multiple tools in one request
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "1. Calculate the square root of 144
+2. Search Wikipedia for information about Python programming
+3. Make a GET request to https://api.github.com/zen
+4. Run a Python script to print the current date and time"
+  }'
+
+# Data processing workflow
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "1. Make a GET request to https://api.github.com/repos/golang/go
+2. Write a Python script to extract the star count from the response and calculate what 1% of that number would be"
+  }'
+```
+
+Each of these commands will return a JSON response with both the final output and the intermediate steps taken by the agent. The response will follow this structure:
+
+```json
+{
+  "result": {
+    "final_output": {
+      "response": "Detailed response from the agent",
+      "confidence": 1.0
+    },
+    "steps": [
+      {
+        "action": "tool_name",
+        "input": {
+          "parameter1": "value1",
+          "parameter2": "value2"
+        },
+        "output": {
+          "result": "tool_output"
+        },
+        "timestamp": 1739983078
+      }
+    ]
+  }
+}
+``` 
