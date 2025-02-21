@@ -56,9 +56,16 @@ The `.env` file should contain:
 OPENAI_API_KEY=your-api-key-here
 
 # Optional
-MAX_ITERATIONS=5
 SYSTEM_MESSAGE="You are a helpful assistant that can perform calculations, make HTTP requests, search Wikipedia, and execute code."
+MAX_ITERATIONS=5  # Maximum number of tool execution iterations per request
+PORT=8080        # Server port (default: 8080)
 ```
+
+Available environment variables:
+- `OPENAI_API_KEY`: Your OpenAI API key (required)
+- `SYSTEM_MESSAGE`: Custom system message for the agent
+- `MAX_ITERATIONS`: Maximum number of tool execution iterations (default: 5)
+- `PORT`: Server port to listen on (default: 8080)
 
 ## Usage
 
@@ -92,12 +99,90 @@ go run cmd/main.go
 ### API Usage
 
 2. Make requests to the API:
+
+#### Basic Request
 ```bash
 curl -X POST http://localhost:8080/execute \
   -H "Content-Type: application/json" \
   -d '{
-    "input": "Can you help me with these tasks:\n1. Calculate 15 divided by 3 and multiply the result by 4\n2. Search Wikipedia for information about Go programming language"
+    "input": "Calculate 15 divided by 3 and multiply the result by 4"
   }'
+```
+
+#### Debug Mode
+You can enable debug mode to get detailed execution logs by setting `debug: true` in your request:
+
+```bash
+curl -X POST http://localhost:8080/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "input": "Calculate 15 divided by 3 and multiply the result by 4",
+    "debug": true
+  }'
+```
+
+The debug mode response includes detailed execution logs showing:
+- 🤖 Input processing
+- 📚 Memory context
+- 🧠 System prompts
+- 📍 Iteration tracking
+- 🛠️ Tool selection and arguments
+- ✅ Tool execution results
+- ✨ Final response generation
+- 📝 Output parsing
+- 💾 Memory storage
+
+Example debug response:
+```json
+{
+  "result": {
+    "final_output": {
+      "response": "The result of dividing 15 by 3 and then multiplying that result by 4 is 20.",
+      "confidence": 1.0
+    },
+    "steps": [
+      {
+        "action": "calculator",
+        "input": {"a": 15, "b": 3, "operation": "divide"},
+        "output": {"result": 5},
+        "timestamp": 1739983078
+      },
+      {
+        "action": "calculator",
+        "input": {"a": 5, "b": 4, "operation": "multiply"},
+        "output": {"result": 20},
+        "timestamp": 1739983079
+      }
+    ]
+  },
+  "debug": [
+    {
+      "timestamp": "2025-02-21T10:51:47Z",
+      "level": "INFO",
+      "message": "🤖 Agent received input: Calculate 15 divided by 3 and multiply the result by 4"
+    },
+    {
+      "timestamp": "2025-02-21T10:51:47Z",
+      "level": "INFO",
+      "message": "🧠 System prompt: You are a helpful assistant that can perform calculations, make HTTP requests, search Wikipedia, and execute code."
+    },
+    {
+      "timestamp": "2025-02-21T10:51:47Z",
+      "level": "INFO",
+      "message": "📍 Starting iteration 1/5"
+    },
+    {
+      "timestamp": "2025-02-21T10:51:49Z",
+      "level": "INFO",
+      "message": "🛠️ Model selected tools to use:\n  - Tool: calculator\n    Arguments: {\"a\":15,\"b\":3,\"operation\":\"divide\"}"
+    },
+    {
+      "timestamp": "2025-02-21T10:51:49Z",
+      "level": "INFO",
+      "message": "✅ Tool output: {\"result\":5}"
+    }
+  ]
+}
 ```
 
 The API will return a JSON response with the following structure:

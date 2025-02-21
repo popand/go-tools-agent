@@ -28,11 +28,35 @@ import (
 // @BasePath /
 type ExecuteRequest struct {
 	Input string `json:"input"`
+	Debug bool   `json:"debug,omitempty"`
 }
 
 type ExecuteResponse struct {
 	Result *agent.AgentResponse `json:"result,omitempty"`
 	Error  string               `json:"error,omitempty"`
+	Debug  []LogEntry           `json:"debug,omitempty"`
+}
+
+type LogEntry struct {
+	Timestamp string `json:"timestamp"`
+	Level     string `json:"level"`
+	Message   string `json:"message"`
+}
+
+// Custom log writer to capture debug logs
+type logWriter struct {
+	logs []LogEntry
+}
+
+func (w *logWriter) Write(p []byte) (n int, err error) {
+	// Parse the log entry
+	entry := LogEntry{
+		Timestamp: time.Now().Format(time.RFC3339),
+		Level:     "INFO",
+		Message:   string(p),
+	}
+	w.logs = append(w.logs, entry)
+	return len(p), nil
 }
 
 func main() {
@@ -136,6 +160,16 @@ func main() {
 		ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 		defer cancel()
 
+		// Set up debug logging if requested
+		var logCapture *logWriter
+		var originalOutput *log.Logger
+		if req.Debug {
+			logCapture = &logWriter{}
+			originalOutput = log.Default()
+			log.SetOutput(logCapture)
+			defer log.SetOutput(originalOutput.Writer())
+		}
+
 		// Execute the agent
 		response, err := toolsAgent.Execute(ctx, req.Input)
 
@@ -145,6 +179,11 @@ func main() {
 			executeResponse.Error = err.Error()
 		} else {
 			executeResponse.Result = response
+		}
+
+		// Add debug logs if requested
+		if req.Debug && logCapture != nil {
+			executeResponse.Debug = logCapture.logs
 		}
 
 		// Send response

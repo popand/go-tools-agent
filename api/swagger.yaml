@@ -67,6 +67,10 @@ components:
           type: string
           description: The instruction or query to execute
           example: "Calculate 15 divided by 3 and multiply the result by 4"
+        debug:
+          type: boolean
+          description: When true, includes detailed execution logs in the response
+          default: false
 
     ExecuteResponse:
       type: object
@@ -102,33 +106,66 @@ components:
               type: array
               description: Array of intermediate steps showing tool executions
               items:
-                type: object
-                required:
-                  - action
-                  - input
-                  - timestamp
-                properties:
-                  action:
-                    type: string
-                    description: The name of the tool that was executed
-                    enum:
-                      - calculator
-                      - httpRequest
-                      - wikipedia
-                      - codeExecution
-                  input:
-                    type: object
-                    description: The input parameters for the tool
-                  output:
-                    type: object
-                    description: The output from the tool execution
-                  error:
-                    type: string
-                    description: Error message if the tool execution failed
-                  timestamp:
-                    type: integer
-                    format: int64
-                    description: Unix timestamp of when the step was executed
+                $ref: '#/components/schemas/ExecutionStep'
+        error:
+          type: string
+          description: Error message if the execution failed
+        debug:
+          type: array
+          description: Detailed execution logs (only included when debug=true)
+          items:
+            $ref: '#/components/schemas/LogEntry'
+
+    ExecutionStep:
+      type: object
+      required:
+        - action
+        - input
+        - timestamp
+      properties:
+        action:
+          type: string
+          description: The name of the tool that was executed
+          enum:
+            - calculator
+            - httpRequest
+            - wikipedia
+            - codeExecution
+        input:
+          type: object
+          description: The input parameters for the tool
+        output:
+          type: object
+          description: The output from the tool execution
+        error:
+          type: string
+          description: Error message if the tool execution failed
+        timestamp:
+          type: integer
+          format: int64
+          description: Unix timestamp of when the step was executed
+
+    LogEntry:
+      type: object
+      required:
+        - timestamp
+        - level
+        - message
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the log entry
+        level:
+          type: string
+          description: Log level (e.g., INFO, ERROR)
+          enum:
+            - INFO
+            - ERROR
+            - DEBUG
+        message:
+          type: string
+          description: The log message
 
     ErrorResponse:
       type: object
